@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI 창업 지원 에이전트</title>
+  <meta name="description" content="진로검사 결과를 창업 아이템, 시장 분석, 비즈니스모델, 사업계획서로 연결하는 교육용 AI 에이전트 프로젝트">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #202124;
+      --muted: #5f6368;
+      --line: #d9dee8;
+      --panel: #ffffff;
+      --soft: #f6f8fb;
+      --blue: #1a73e8;
+      --green: #16815a;
+      --yellow: #b06000;
+      --red: #b3261e;
+      --navy: #24324b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif;
+      color: var(--ink);
+      background: #f7f9fc;
+      line-height: 1.55;
+    }
+
+    header {
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .topbar {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 230px;
+    }
+
+    .mark {
+      width: 34px;
+      height: 34px;
+      border: 1px solid #b9c7dd;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: #eef4ff;
+      color: var(--blue);
+      font-weight: 800;
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 15px;
+    }
+
+    .brand span {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    nav {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+      padding: 7px 9px;
+      border-radius: 6px;
+    }
+
+    nav a:hover {
+      color: var(--blue);
+      background: #eef4ff;
+    }
+
+    main {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 30px 24px 60px;
+    }
+
+    .intro {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 38px;
+      line-height: 1.18;
+      letter-spacing: 0;
+      color: var(--navy);
+    }
+
+    .lead {
+      margin: 18px 0 0;
+      font-size: 17px;
+      color: #3f4654;
+      max-width: 690px;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .metric,
+    .panel,
+    .agent,
+    .task {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .metric {
+      padding: 14px;
+      min-height: 92px;
+    }
+
+    .metric b {
+      display: block;
+      font-size: 24px;
+      color: var(--navy);
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .panel {
+      padding: 22px;
+    }
+
+    .panel h2,
+    section h2 {
+      margin: 0 0 14px;
+      color: var(--navy);
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+
+    .flow {
+      display: grid;
+      gap: 12px;
+      position: relative;
+    }
+
+    .flow-step {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 12px;
+      align-items: center;
+      padding: 10px;
+      background: var(--soft);
+      border: 1px solid #e3e8f0;
+      border-radius: 8px;
+    }
+
+    .flow-step .code {
+      height: 42px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: var(--navy);
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .flow-step strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .flow-step span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    section {
+      margin-top: 34px;
+    }
+
+    .agents {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .agent {
+      padding: 16px;
+      min-height: 176px;
+      border-top: 4px solid var(--blue);
+    }
+
+    .agent:nth-child(2) { border-top-color: var(--green); }
+    .agent:nth-child(3) { border-top-color: var(--yellow); }
+    .agent:nth-child(4) { border-top-color: #7a4cc2; }
+    .agent:nth-child(5) { border-top-color: var(--red); }
+
+    .agent .id {
+      font-weight: 800;
+      color: var(--blue);
+      font-size: 13px;
+    }
+
+    .agent h3 {
+      margin: 8px 0;
+      font-size: 16px;
+      line-height: 1.35;
+      color: var(--navy);
+    }
+
+    .agent p,
+    .task p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 16px;
+    }
+
+    .checklist {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 10px;
+    }
+
+    .checklist li {
+      display: grid;
+      grid-template-columns: 26px 1fr;
+      gap: 10px;
+      align-items: start;
+      color: #374151;
+    }
+
+    .check {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #e9f6ef;
+      color: var(--green);
+      font-weight: 800;
+      font-size: 13px;
+      margin-top: 2px;
+    }
+
+    .tasks {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .task {
+      padding: 16px;
+    }
+
+    .task strong {
+      display: block;
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+
+    .privacy {
+      background: #fff8e8;
+      border-color: #f1d28c;
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding-top: 22px;
+      margin-top: 34px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 900px) {
+      .intro,
+      .status-grid,
+      .agents,
+      .tasks {
+        grid-template-columns: 1fr;
+      }
+
+      .meta {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      nav {
+        justify-content: flex-start;
+      }
+
+      h1 {
+        font-size: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="brand">
+        <div class="mark">AI</div>
+        <div>
+          <strong>AI 창업 지원 에이전트</strong>
+          <span>진로 연계 1인 창업 교육 모델</span>
+        </div>
+      </div>
+      <nav aria-label="주요 섹션">
+        <a href="#workflow">흐름</a>
+        <a href="#agents">에이전트</a>
+        <a href="#status">진행상황</a>
+        <a href="#next">다음 작업</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <div>
+        <h1 id="page-title">진로검사 결과에서 사업계획서까지 이어지는 교육용 AI 에이전트</h1>
+        <p class="lead">
+          직업계고 학생이 진로검사 결과를 이해하고, 자신의 관심 분야와 연결된 창업 아이템을 구체화한 뒤
+          시장 분석, 비즈니스모델, 사업계획서 초안까지 단계적으로 완성하도록 돕는 프로젝트입니다.
+        </p>
+        <div class="meta" aria-label="프로젝트 요약">
+          <div class="metric">
+            <b>5단계</b>
+            <span>AG01부터 AG05까지 연결된 에이전트 흐름</span>
+          </div>
+          <div class="metric">
+            <b>6종</b>
+            <span>공공데이터 수집 검증 완료 데이터소스</span>
+          </div>
+          <div class="metric">
+            <b>2026.07.13</b>
+            <span>현재 진행상황 기준일</span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="panel" id="workflow" aria-labelledby="workflow-title">
+        <h2 id="workflow-title">학습 흐름</h2>
+        <div class="flow">
+          <div class="flow-step">
+            <div class="code">AG01</div>
+            <div><strong>진로분석</strong><span>진로검사 PDF를 구조화된 프로필로 변환</span></div>
+          </div>
+          <div class="flow-step">
+            <div class="code">AG02</div>
+            <div><strong>창업아이템 추천</strong><span>진로 프로필과 연결된 아이템 3개 제안</span></div>
+          </div>
+          <div class="flow-step">
+            <div class="code">AG03</div>
+            <div><strong>시장·고객 분석</strong><span>고객 문제와 시장 근거 점검</span></div>
+          </div>
+          <div class="flow-step">
+            <div class="code">AG04</div>
+            <div><strong>비즈니스모델 설계</strong><span>가치제안, 수익, 운영 구조 정리</span></div>
+          </div>
+          <div class="flow-step">
+            <div class="code">AG05</div>
+            <div><strong>사업계획서 작성</strong><span>JSON과 Markdown 초안 및 피드백 생성</span></div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section id="agents" aria-labelledby="agents-title">
+      <h2 id="agents-title">에이전트 구성</h2>
+      <div class="agents">
+        <article class="agent">
+          <div class="id">AG01</div>
+          <h3>진로분석 에이전트</h3>
+          <p>학생 자료를 익명 프로필 JSON으로 정리하고, 확인되지 않은 정보는 추측하지 않습니다.</p>
+        </article>
+        <article class="agent">
+          <div class="id">AG02</div>
+          <h3>창업아이템 추천</h3>
+          <p>진로분석 결과를 바탕으로 수업에서 다룰 수 있는 창업 아이템 후보를 제안합니다.</p>
+        </article>
+        <article class="agent">
+          <div class="id">AG03</div>
+          <h3>시장·고객 분석</h3>
+          <p>선택된 아이템의 고객, 문제, 경쟁 대안, 공개 데이터 근거를 정리합니다.</p>
+        </article>
+        <article class="agent">
+          <div class="id">AG04</div>
+          <h3>비즈니스모델 설계</h3>
+          <p>가치제안, 핵심 기능, 수익·비용 가설과 검증 질문을 구성합니다.</p>
+        </article>
+        <article class="agent">
+          <div class="id">AG05</div>
+          <h3>사업계획서 작성·피드백</h3>
+          <p>앞 단계 결과를 사업계획서 초안으로 만들고 개인정보 형태를 가린 뒤 피드백합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="status" aria-labelledby="status-title">
+      <h2 id="status-title">현재 진행상황</h2>
+      <div class="status-grid">
+        <div class="panel">
+          <ul class="checklist">
+            <li><span class="check">✓</span><span>AG01~AG05 Skill, 프롬프트, 표준 JSON, 샘플 데이터 1차 구현 완료</span></li>
+            <li><span class="check">✓</span><span>학생 제출, AG01 처리, 개인정보 검증, 중복 방지, 교수자 조회 흐름 스모크 테스트 통과</span></li>
+            <li><span class="check">✓</span><span>AG01 JSON 기반 AG02~AG05 JSON·Markdown 전체 파이프라인 테스트 통과</span></li>
+            <li><span class="check">✓</span><span>기업마당, 상권, KOSIS, OPENDART, 네이버 데이터랩, KIPRIS 수집 검증 완료</span></li>
+          </ul>
+        </div>
+        <div class="panel privacy">
+          <h2>개인정보 보호 기준</h2>
+          <ul class="checklist">
+            <li><span class="check">✓</span><span>학생 이름 대신 익명 `student_profile_id` 사용</span></li>
+            <li><span class="check">✓</span><span>원본 PDF와 결과 JSON 분리</span></li>
+            <li><span class="check">✓</span><span>외부 AI 전송 전 학교 승인, 비식별화, 최소 정보 전송 원칙 적용</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="next" aria-labelledby="next-title">
+      <h2 id="next-title">다음 작업</h2>
+      <div class="tasks">
+        <article class="task">
+          <strong>비식별 진로검사 PDF 검증</strong>
+          <p>여러 PDF 형식에서 AG01 분석 정확성과 OCR 예외 처리를 확인합니다.</p>
+        </article>
+        <article class="task">
+          <strong>학생 아이템별 특허 키워드 수집</strong>
+          <p>KIPRIS Open API를 실제 수업 아이템 키워드에 맞춰 재실행합니다.</p>
+        </article>
+        <article class="task">
+          <strong>수업자료와 평가도구 정리</strong>
+          <p>학생 활동지, 교수자 운영 절차, 사업계획서 평가 루브릭을 보완합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      <p>이 페이지는 공개 가능한 프로젝트 요약만 포함합니다. 학생 개인정보, 원본 PDF 파일명, 인증키, DB 내용은 포함하지 않습니다.</p>
+    </footer>
+  </main>
+</body>
+</html>

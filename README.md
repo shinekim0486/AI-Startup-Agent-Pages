@@ -1,0 +1,1 @@
+﻿# AI Startup Agent Pages`n`nPublic GitHub Pages site for the AI Startup Agent education project.`n`nThis repository contains only public static site files. It does not include student data, source PDFs, API keys, databases, or private project files.
