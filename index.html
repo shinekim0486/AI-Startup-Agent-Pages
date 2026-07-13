@@ -253,6 +253,107 @@
       font-size: 13px;
     }
 
+    .agent {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .agent p {
+      flex: 1;
+    }
+
+    .agent-action {
+      width: 100%;
+      border: 1px solid #c5d4ec;
+      border-radius: 6px;
+      background: #eef4ff;
+      color: var(--blue);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+
+    .agent-action:hover,
+    .agent-action:focus-visible {
+      background: var(--blue);
+      color: #fff;
+      outline: none;
+    }
+
+    .agent.is-active {
+      border-color: #9bbdf4;
+      box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.14);
+    }
+
+    .agent.is-active .agent-action {
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .agent-detail {
+      margin-top: 16px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .agent-detail-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .agent-detail h3 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 18px;
+    }
+
+    .agent-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #e8f0fe;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .agent-detail-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .agent-detail-grid div {
+      min-height: 86px;
+      padding: 12px;
+      border: 1px solid #e3e8f0;
+      border-radius: 8px;
+      background: var(--soft);
+    }
+
+    .agent-detail-grid strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--navy);
+      font-size: 13px;
+    }
+
+    .agent-detail-grid span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
     .status-grid {
       display: grid;
       grid-template-columns: 1.1fr 0.9fr;
@@ -321,6 +422,7 @@
       .intro,
       .status-grid,
       .agents,
+      .agent-detail-grid,
       .tasks {
         grid-template-columns: 1fr;
       }
@@ -443,6 +545,26 @@
           <p>앞 단계 결과를 사업계획서 초안으로 만들고 개인정보 형태를 가린 뒤 피드백합니다.</p>
         </article>
       </div>
+      <div class="agent-detail" id="agent-detail" aria-live="polite">
+        <div class="agent-detail-head">
+          <h3 id="agent-detail-title">AG01 Career Analysis Agent</h3>
+          <span class="agent-badge" id="agent-detail-badge">Active</span>
+        </div>
+        <div class="agent-detail-grid">
+          <div>
+            <strong>Role</strong>
+            <span id="agent-detail-role">Creates an anonymous career profile JSON from career test inputs.</span>
+          </div>
+          <div>
+            <strong>Input</strong>
+            <span id="agent-detail-input">Career test PDF, student_profile_id, interests, preferred jobs</span>
+          </div>
+          <div>
+            <strong>Output</strong>
+            <span id="agent-detail-output">career_profile.json, AG02 handoff fields, missing-field list</span>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section id="status" aria-labelledby="status-title">
@@ -489,5 +611,84 @@
       <p>이 페이지는 공개 가능한 프로젝트 요약만 포함합니다. 학생 개인정보, 원본 PDF 파일명, 인증키, DB 내용은 포함하지 않습니다.</p>
     </footer>
   </main>
+  <script>
+    const agentData = {
+      AG01: {
+        title: "AG01 Career Analysis Agent",
+        role: "Creates an anonymous career profile JSON from career test inputs.",
+        input: "Career test PDF, student_profile_id, interests, preferred jobs",
+        output: "career_profile.json, AG02 handoff fields, missing-field list"
+      },
+      AG02: {
+        title: "AG02 Startup Item Recommendation Agent",
+        role: "Suggests startup item candidates connected to the AG01 career profile.",
+        input: "career_profile.json, career keywords, recommended jobs, class constraints",
+        output: "Three startup item candidates, reasons, next analysis questions"
+      },
+      AG03: {
+        title: "AG03 Market and Customer Analysis Agent",
+        role: "Organizes customer problems, market signals, competitors, and public-data evidence.",
+        input: "Selected item, customer hypothesis, industry and region keywords",
+        output: "Market and customer summary, evidence notes, validation checklist"
+      },
+      AG04: {
+        title: "AG04 Business Model Design Agent",
+        role: "Builds value proposition, key features, revenue-cost hypotheses, and validation questions.",
+        input: "Item description, AG03 analysis, operating conditions",
+        output: "Business model summary, revenue structure, experiment plan"
+      },
+      AG05: {
+        title: "AG05 Business Plan Draft and Feedback Agent",
+        role: "Turns AG01-AG04 outputs into a business plan draft and feedback notes.",
+        input: "AG01-AG04 JSON results, student supplements, evaluation criteria",
+        output: "Markdown business plan draft, JSON summary, revision feedback"
+      }
+    };
+
+    const activateText = "\uD65C\uC131\uD654";
+    const activeText = "\uD65C\uC131\uD654\uB428";
+    const agentCards = Array.from(document.querySelectorAll(".agent"));
+    const detailTitle = document.querySelector("#agent-detail-title");
+    const detailRole = document.querySelector("#agent-detail-role");
+    const detailInput = document.querySelector("#agent-detail-input");
+    const detailOutput = document.querySelector("#agent-detail-output");
+
+    function setActiveAgent(agentId) {
+      const detail = agentData[agentId];
+      if (!detail) return;
+
+      agentCards.forEach((card) => {
+        const button = card.querySelector(".agent-action");
+        const buttonAgentId = button?.dataset.agent;
+        const isActive = buttonAgentId === agentId;
+        card.classList.toggle("is-active", isActive);
+        if (button) {
+          button.setAttribute("aria-pressed", String(isActive));
+          button.textContent = `${buttonAgentId} ${isActive ? activeText : activateText}`;
+        }
+      });
+
+      detailTitle.textContent = detail.title;
+      detailRole.textContent = detail.role;
+      detailInput.textContent = detail.input;
+      detailOutput.textContent = detail.output;
+    }
+
+    agentCards.forEach((card) => {
+      const agentId = card.querySelector(".id")?.textContent.trim();
+      if (!agentData[agentId] || card.querySelector(".agent-action")) return;
+
+      const button = document.createElement("button");
+      button.className = "agent-action";
+      button.type = "button";
+      button.dataset.agent = agentId;
+      button.setAttribute("aria-pressed", "false");
+      button.textContent = `${agentId} ${activateText}`;
+      button.addEventListener("click", () => setActiveAgent(agentId));
+      card.appendChild(button);
+    });
+
+    setActiveAgent("AG01");
+  </script>
 </body>
 </html>
